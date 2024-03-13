@@ -34,7 +34,7 @@ public class OrderAdoption {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "pet_adoption_id")
     private PetAdoption petAdoption;
 }
