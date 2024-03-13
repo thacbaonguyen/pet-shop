@@ -4,7 +4,9 @@ import com.petbackend.thbao.models.AdoptionImage;
 import com.petbackend.thbao.models.PetReport;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+
 public interface PetReportRepository extends JpaRepository<PetReport, Long> {
-    PetReport findByUserId(Long userId);
-    PetReport findByPetMissingId(Long petMissingId);
+    List<PetReport> findByUserId(Long userId);
+    List<PetReport>  findByPetMissingId(Long petMissingId);
 }

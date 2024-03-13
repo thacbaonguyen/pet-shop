@@ -9,12 +9,15 @@ import com.petbackend.thbao.responses.PetMissingResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
+import java.util.List;
+
 public interface IPetMissingService {
     PetMissing createPetMissing(PetMissingDTO petMissingDTO) throws DataNotFoundException;
 
     PetMissing getPetMissingById(Long id);
 
-    PetMissing getPetMissingByUserId(Long userId);
+    List<PetMissing> getPetMissingByUserId(Long userId);
+    List<PetMissing> getPetMissingByCategoryId(Long categoryId);
 
     Page<PetMissingResponse> getAllPetMissing(PageRequest pageRequest);
 

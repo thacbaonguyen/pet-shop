@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.DateTimeException;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -61,8 +62,15 @@ public class PetMissingService implements IPetMissingService{
     }
 
     @Override
-    public PetMissing getPetMissingByUserId(Long userId) {
-        return petMissingRepository.findByUserId(userId);
+    public List<PetMissing> getPetMissingByUserId(Long userId) {
+        List<PetMissing> list = petMissingRepository.findByUserId(userId);
+        return list;
+    }
+
+    @Override
+    public List<PetMissing> getPetMissingByCategoryId(Long categoryId) {
+        List<PetMissing> list = petMissingRepository.findByCategoryId(categoryId);
+        return list;
     }
 
     @Override

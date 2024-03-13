@@ -15,6 +15,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -49,8 +50,12 @@ public class PetReportController {
     @GetMapping("/pets/{id}")
     public ResponseEntity<?> getPetReportByPetMissingId(@PathVariable("id") Long missingID){
         try{
-            PetReport petReport = petReportService.getPetReportByPetMissingId(missingID);
-            return ResponseEntity.ok(PetReportResponse.fromPetReportResponse(petReport));
+            List<PetReport> petReport = petReportService.getPetReportByPetMissingId(missingID);
+            List<PetReportResponse> petReportResponseList = new ArrayList<>();
+            for(PetReport result : petReport){
+                petReportResponseList.add(PetReportResponse.fromPetReportResponse(result));
+            }
+            return ResponseEntity.ok(petReportResponseList);
         }
         catch (Exception e){
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -60,8 +65,12 @@ public class PetReportController {
     @GetMapping("/users/{id}")
     public ResponseEntity<?> getPetReportByUserId(@PathVariable("id") Long userId){
         try{
-            PetReport petReport = petReportService.getPetReportByUserId(userId);
-            return ResponseEntity.ok(PetReportResponse.fromPetReportResponse(petReport));
+            List<PetReport> petReport = petReportService.getPetReportByUserId(userId);
+            List<PetReportResponse> petReportResponseList = new ArrayList<>();
+            for (PetReport result : petReport){
+                petReportResponseList.add(PetReportResponse.fromPetReportResponse(result));
+            }
+            return ResponseEntity.ok(petReportResponseList);
         }
         catch (Exception e){
             return ResponseEntity.badRequest().body(e.getMessage());

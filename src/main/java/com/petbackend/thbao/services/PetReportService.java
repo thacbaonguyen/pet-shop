@@ -17,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 @Service
 @RequiredArgsConstructor
@@ -59,17 +60,19 @@ public class PetReportService implements IPetReportService{
     }
 
     @Override
-    public PetReport getPetReportByUserId(Long userId) throws DataNotFoundException {
-        User existsUser = userRepository.findById(userId).orElseThrow(()-> new DataNotFoundException("Cannot found user"));
-
-        return petReportRepository.findByUserId(userId);
+    public List<PetReport> getPetReportByUserId(Long userId) throws DataNotFoundException {
+        User existsUser = userRepository.findById(userId).orElseThrow(()->
+                new DataNotFoundException("Cannot found user"));
+        List<PetReport> list = petReportRepository.findByUserId(userId);
+        return list;
     }
 
     @Override
-    public PetReport getPetReportByPetMissingId(Long missingId) throws DataNotFoundException {
+    public List<PetReport> getPetReportByPetMissingId(Long missingId) throws DataNotFoundException {
         PetMissing petMissing = petMissingRepository.findById(missingId).orElseThrow(()->
                 new DataNotFoundException("Cannot found Pet missing"));
-        return petReportRepository.findByPetMissingId(missingId);
+        List<PetReport> list = petReportRepository.findByPetMissingId(missingId);
+        return list;
     }
 
     @Override

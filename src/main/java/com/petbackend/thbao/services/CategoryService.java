@@ -13,17 +13,16 @@ import java.util.List;
 public class CategoryService implements ICategoryService{
     private final CategoryRepository categoryRepository;
     @Override
-    public List<Category> getAllCategory() {
-        return categoryRepository.findAll();
-    }
-
-    @Override
     public Category createCategory(CategoryDTO categoryDTO) {
         Category category = new Category();
         category = Category.builder()
                 .name(categoryDTO.getName()).build();
 
         return categoryRepository.save(category);
+    }
+    @Override
+    public List<Category> getAllCategory() {
+        return categoryRepository.findAll();
     }
 
     @Override

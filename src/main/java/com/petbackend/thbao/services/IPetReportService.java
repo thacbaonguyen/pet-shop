@@ -9,6 +9,8 @@ import com.petbackend.thbao.responses.PetReportResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
+import java.util.List;
+
 public interface IPetReportService {
     PetReport createPetReport(PetReportDTO petReportDTO) throws DataNotFoundException;
 
@@ -16,9 +18,9 @@ public interface IPetReportService {
 
     PetReport getPetReportById(Long id) throws DataNotFoundException;
 
-    PetReport getPetReportByUserId(Long userId) throws DataNotFoundException;
+    List<PetReport> getPetReportByUserId(Long userId) throws DataNotFoundException;
 
-    PetReport getPetReportByPetMissingId(Long missingId) throws DataNotFoundException;
+    List<PetReport> getPetReportByPetMissingId(Long missingId) throws DataNotFoundException;
 
     PetReport updatePetReport(Long id, PetReportDTO petReportDTO) throws DataNotFoundException;
 

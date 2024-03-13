@@ -32,9 +32,6 @@ public class PetMissingDTO {
     @JsonProperty("missing_time")
     private LocalDate missingTime;
 
-    @NotEmpty(message = "Image cannot be empty")
-    private String image;
-
     @NotNull(message = "Category ID cannot be empty")
     @JsonProperty("category_id")
     private Long categoryId;

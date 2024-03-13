@@ -16,6 +16,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -23,6 +24,19 @@ import java.util.List;
 @RequestMapping("${api.prefix}/pets")
 public class PetMissingController {
     private final IPetMissingService petMissingService;
+    @PostMapping("")
+    public ResponseEntity<?> createPetMissing(@Valid @RequestBody PetMissingDTO petMissingDTO, BindingResult result) {
+        try {
+            if (result.hasErrors()){
+                List<String> errorMessage = result.getFieldErrors().stream().map(FieldError::getDefaultMessage).toList();
+                return ResponseEntity.badRequest().body(errorMessage);
+            }
+            PetMissing petMissing = petMissingService.createPetMissing(petMissingDTO);
+            return ResponseEntity.ok(PetMissingResponse.fromPetMissingResponse(petMissing));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
     @GetMapping("")
     public ResponseEntity<?> getAllPetMissing(@RequestParam("page") int page,
                                        @RequestParam("limit") int limit){
@@ -42,16 +56,31 @@ public class PetMissingController {
         PetMissing petMissing = petMissingService.getPetMissingById(id);
         return ResponseEntity.ok(PetMissingResponse.fromPetMissingResponse(petMissing));
     }
-    @PostMapping("")
-    public ResponseEntity<?> createPetMissing(@Valid @RequestBody PetMissingDTO petMissingDTO, BindingResult result) {
+    @GetMapping("/users/{id}")
+    public ResponseEntity<?> getPetMissingByUserId(@PathVariable("id") Long userId){
         try {
-            if (result.hasErrors()){
-                List<String> errorMessage = result.getFieldErrors().stream().map(FieldError::getDefaultMessage).toList();
-                return ResponseEntity.badRequest().body(errorMessage);
+            List<PetMissing> petMissing = petMissingService.getPetMissingByUserId(userId);
+            List<PetMissingResponse> petMissingResponseList = new ArrayList<>();
+            for(PetMissing result : petMissing){
+                petMissingResponseList.add(PetMissingResponse.fromPetMissingResponse(result));
             }
-            PetMissing petMissing = petMissingService.createPetMissing(petMissingDTO);
-            return ResponseEntity.ok(PetMissingResponse.fromPetMissingResponse(petMissing));
-        } catch (Exception e) {
+            return ResponseEntity.ok(petMissingResponseList);
+        }
+        catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    @GetMapping("/categories/{id}")
+    public ResponseEntity<?> getPetMissingByCategoryId(@PathVariable("id") Long categoryId){
+        try {
+            List<PetMissing> petMissing = petMissingService.getPetMissingByCategoryId(categoryId);
+            List<PetMissingResponse> petMissingResponseList = new ArrayList<>();
+            for(PetMissing result : petMissing){
+                petMissingResponseList.add(PetMissingResponse.fromPetMissingResponse(result));
+            }
+            return ResponseEntity.ok(petMissingResponseList);
+        }
+        catch (Exception e){
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
