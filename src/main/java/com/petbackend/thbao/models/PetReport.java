@@ -3,6 +3,7 @@ package com.petbackend.thbao.models;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -25,7 +26,7 @@ public class PetReport {
     private String addressFound;
 
     @Column(name = "time_found", nullable = false, length = 255)
-    private LocalDateTime timeFound;
+    private LocalDate timeFound;
 
     private String health;
 

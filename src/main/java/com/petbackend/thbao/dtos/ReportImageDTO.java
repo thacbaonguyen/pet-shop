@@ -9,9 +9,9 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MissingImageDTO {
+public class ReportImageDTO {
     private String url;
 
-    @JsonProperty("missing_id")
-    private Long missingId;
+    @JsonProperty("report_id")
+    private Long petReportId;
 }
