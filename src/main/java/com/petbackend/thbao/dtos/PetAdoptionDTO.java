@@ -27,6 +27,9 @@ public class PetAdoptionDTO {
 
     private String description;
 
+    @JsonProperty("is_active")
+    private boolean isActive;
+
     @NotEmpty(message = "Phone number cannot be empty")
     @JsonProperty("phone_number")
     private String phoneNumber;

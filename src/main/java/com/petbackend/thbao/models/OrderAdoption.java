@@ -1,10 +1,14 @@
 package com.petbackend.thbao.models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+import java.time.LocalDate;
+
 @Entity
-@Table(name = "users")
+@Table(name = "order_adoptions")
 @Getter
 @Setter
 @Data
@@ -22,8 +26,8 @@ public class OrderAdoption {
     @Column(name = "phone_number", nullable = false, length = 15)
     private String phoneNumber;
 
-    @Column(nullable = false)
-    private Long age;
+    @Column(name = "date_of_birth", nullable = false)
+    private LocalDate dateOfBirth;
 
     @Column(nullable = false, length = 255)
     private String address;

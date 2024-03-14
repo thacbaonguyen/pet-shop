@@ -6,6 +6,8 @@ import jakarta.validation.constraints.*;
 import lombok.*;
 import org.springframework.beans.factory.annotation.Value;
 
+import java.time.LocalDate;
+
 @Data
 @Getter
 @Setter
@@ -21,10 +23,9 @@ public class OrderAdoptionDTO {
     @NotEmpty(message = "Phone number cannot be empty")
     private String phoneNumber;
 
-    @NotNull(message = "Age cannot be empty")
-    @Min(value = 18, message = "Age must be greater than 18")
-    @Max(value = 50, message = "Age must be less than 50")
-    private Long age;
+    @NotNull(message = "Date of birth cannot be empty")
+    @JsonProperty("date_of_birth")
+    private LocalDate dateOfBirth;
 
     @NotEmpty(message = "Address cannot be empty")
     private String address;

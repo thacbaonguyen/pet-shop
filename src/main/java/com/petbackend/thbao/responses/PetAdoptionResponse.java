@@ -32,6 +32,8 @@ public class PetAdoptionResponse {
 
     private String address;
 
+    private boolean isActive;
+
     private Long categoryId;
 
     private Long userId;
@@ -44,6 +46,7 @@ public class PetAdoptionResponse {
                 .health(petAdoption.getHealth())
                 .description(petAdoption.getDescription())
                 .phoneNumber(petAdoption.getPhoneNumber())
+                .isActive(petAdoption.isActive())
                 .address(petAdoption.getAddress())
                 .userId(petAdoption.getUser().getId())
                 .categoryId(petAdoption.getCategory().getId()).build();

@@ -33,6 +33,7 @@ public class UserService implements IUserService{
                 .address(userDTO.getAddress())
                 .password(userDTO.getPassword())
                 .email(userDTO.getEmail())
+                .active(true)
                 .build();
         user.setRole(role);
         return userRepository.save(user);

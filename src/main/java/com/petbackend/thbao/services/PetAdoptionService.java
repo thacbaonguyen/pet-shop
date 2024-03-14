@@ -48,6 +48,7 @@ public class PetAdoptionService implements IPetAdoptionService {
                 .description(petAdoptionDTO.getDescription())
                 .phoneNumber(petAdoptionDTO.getPhoneNumber())
                 .address(petAdoptionDTO.getAddress())
+                .isActive(true)
                 .category(category.get())
                 .user(user.get()).build();
         petAdoptionRepository.save(petAdoption);

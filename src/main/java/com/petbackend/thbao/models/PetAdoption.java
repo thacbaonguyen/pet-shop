@@ -37,6 +37,9 @@ public class PetAdoption {
 
     private String address;
 
+    @Column(name = "is_active", nullable = false)
+    private boolean isActive;
+
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
