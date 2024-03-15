@@ -21,7 +21,7 @@ import java.util.List;
 public class ProductController {
     private final IProductService productService;
     @PostMapping("")
-    public ResponseEntity<?> createProduct(@Valid @RequestBody ProductDTO productDTO, BindingResult result){
+    public ResponseEntity<?> createProducts(@Valid @RequestBody ProductDTO productDTO, BindingResult result){
         try {
             if (result.hasErrors()){
                 List<String> errorMessage = result.getFieldErrors().stream().map(FieldError::getDefaultMessage).toList();
