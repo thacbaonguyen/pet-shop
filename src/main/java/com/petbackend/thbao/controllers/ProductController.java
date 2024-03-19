@@ -86,7 +86,7 @@ public class ProductController {
     private String storeFile(MultipartFile file) throws IOException {
         String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
         String uniqueFileName = UUID.randomUUID().toString() + "_" + fileName;
-        Path uploadDir = Paths.get("uploads");
+        Path uploadDir = Paths.get("uploads-products");
         if (!Files.exists(uploadDir)){
             Files.createDirectories(uploadDir);
         }

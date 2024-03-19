@@ -1,4 +1,4 @@
-package com.petbackend.thbao.services;
+package com.petbackend.thbao.services.impl;
 
 import com.petbackend.thbao.dtos.OrderAdoptionDTO;
 import com.petbackend.thbao.exceptions.DataNotFoundException;
@@ -9,6 +9,7 @@ import com.petbackend.thbao.repositories.OrderAdoptionRepository;
 import com.petbackend.thbao.repositories.PetAdoptionRepository;
 import com.petbackend.thbao.repositories.UserRepository;
 import com.petbackend.thbao.responses.OrderAdoptionResponse;
+import com.petbackend.thbao.services.IOrderAdoptionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,7 +21,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class OrderAdoptionService implements IOrderAdoptionService{
+public class OrderAdoptionService implements IOrderAdoptionService {
     private final UserRepository userRepository;
     private final PetAdoptionRepository petAdoptionRepository;
     private final OrderAdoptionRepository orderAdoptionRepository;

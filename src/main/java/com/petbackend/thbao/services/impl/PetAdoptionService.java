@@ -1,4 +1,4 @@
-package com.petbackend.thbao.services;
+package com.petbackend.thbao.services.impl;
 
 import com.petbackend.thbao.dtos.AdoptionImageDTO;
 import com.petbackend.thbao.dtos.PetAdoptionDTO;
@@ -12,6 +12,7 @@ import com.petbackend.thbao.repositories.CategoryRepository;
 import com.petbackend.thbao.repositories.PetAdoptionRepository;
 import com.petbackend.thbao.repositories.UserRepository;
 import com.petbackend.thbao.responses.PetAdoptionResponse;
+import com.petbackend.thbao.services.IPetAdoptionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

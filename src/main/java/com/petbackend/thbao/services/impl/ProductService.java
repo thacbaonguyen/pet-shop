@@ -1,4 +1,4 @@
-package com.petbackend.thbao.services;
+package com.petbackend.thbao.services.impl;
 
 import com.petbackend.thbao.dtos.ProductDTO;
 import com.petbackend.thbao.dtos.ProductImageDTO;
@@ -7,6 +7,7 @@ import com.petbackend.thbao.models.Product;
 import com.petbackend.thbao.models.ProductImage;
 import com.petbackend.thbao.repositories.ProductImageRepository;
 import com.petbackend.thbao.repositories.ProductRepository;
+import com.petbackend.thbao.services.IProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -14,7 +15,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class ProductService implements IProductService{
+public class ProductService implements IProductService {
     private final ProductRepository productRepository;
     private final ProductImageRepository productImageRepository;
     @Override

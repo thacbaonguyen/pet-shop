@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.time.LocalDate;
@@ -14,30 +15,31 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class OrderAdoptionDTO {
     @JsonProperty("fullname")
     @NotEmpty(message = "Full name cannot be empty")
-    private String fullName;
+    String fullName;
 
     @JsonProperty("phone_number")
     @NotEmpty(message = "Phone number cannot be empty")
-    private String phoneNumber;
+    String phoneNumber;
 
     @NotNull(message = "Date of birth cannot be empty")
     @JsonProperty("date_of_birth")
-    private LocalDate dateOfBirth;
+    LocalDate dateOfBirth;
 
     @NotEmpty(message = "Address cannot be empty")
-    private String address;
+    String address;
 
-    private String email;
+    String email;
 
     @JsonProperty("pet_adoption_id")
     @NotNull(message = "Pet adoption ID cannot be null")
-    private Long petAdoptionId;
+    Long petAdoptionId;
 
     @JsonProperty("user_id")
     @NotNull(message = "User ID cannot be empty")
-    private Long userId;
+    Long userId;
 
 }

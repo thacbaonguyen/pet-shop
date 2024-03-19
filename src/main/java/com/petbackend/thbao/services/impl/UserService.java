@@ -1,4 +1,4 @@
-package com.petbackend.thbao.services;
+package com.petbackend.thbao.services.impl;
 
 import com.petbackend.thbao.dtos.UserDTO;
 import com.petbackend.thbao.exceptions.DataNotFoundException;
@@ -7,13 +7,14 @@ import com.petbackend.thbao.models.Role;
 import com.petbackend.thbao.models.User;
 import com.petbackend.thbao.repositories.RoleRepository;
 import com.petbackend.thbao.repositories.UserRepository;
+import com.petbackend.thbao.services.IUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class UserService implements IUserService{
+public class UserService implements IUserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     @Override

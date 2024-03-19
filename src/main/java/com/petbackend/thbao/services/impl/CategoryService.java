@@ -1,8 +1,9 @@
-package com.petbackend.thbao.services;
+package com.petbackend.thbao.services.impl;
 
 import com.petbackend.thbao.dtos.CategoryDTO;
 import com.petbackend.thbao.models.Category;
 import com.petbackend.thbao.repositories.CategoryRepository;
+import com.petbackend.thbao.services.ICategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -10,7 +11,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class CategoryService implements ICategoryService{
+public class CategoryService implements ICategoryService {
     private final CategoryRepository categoryRepository;
     @Override
     public Category createCategory(CategoryDTO categoryDTO) {

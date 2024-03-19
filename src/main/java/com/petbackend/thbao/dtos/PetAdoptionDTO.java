@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 @Data
 @Setter
@@ -11,37 +12,38 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class PetAdoptionDTO {
     @NotEmpty(message = "Pet name cannot be empty")
-    private String name;
+    String name;
 
-    private String color;
+    String color;
 
     @NotEmpty(message = "Pet age cannot be empty")
-    private String age;
+    String age;
 
-    private String sex;
+    String sex;
 
     @NotEmpty(message = "Health cannot be empty")
-    private String health;
+    String health;
 
-    private String description;
+    String description;
 
     @JsonProperty("is_active")
-    private boolean isActive;
+    boolean isActive;
 
     @NotEmpty(message = "Phone number cannot be empty")
     @JsonProperty("phone_number")
-    private String phoneNumber;
+    String phoneNumber;
 
     @NotEmpty(message = "Address cannot be empty")
-    private String address;
+    String address;
 
     @NotNull(message = "Category ID cannot be null")
     @JsonProperty("category_id")
-    private Long categoryId;
+    Long categoryId;
 
     @NotNull(message = "User Id cannot be null")
     @JsonProperty("user_id")
-    private Long userId;
+    Long userId;
 }

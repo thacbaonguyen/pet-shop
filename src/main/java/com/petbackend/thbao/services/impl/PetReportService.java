@@ -1,4 +1,4 @@
-package com.petbackend.thbao.services;
+package com.petbackend.thbao.services.impl;
 
 import com.petbackend.thbao.dtos.PetReportDTO;
 import com.petbackend.thbao.dtos.ReportImageDTO;
@@ -12,6 +12,7 @@ import com.petbackend.thbao.repositories.PetReportRepository;
 import com.petbackend.thbao.repositories.ReportImageRepository;
 import com.petbackend.thbao.repositories.UserRepository;
 import com.petbackend.thbao.responses.PetReportResponse;
+import com.petbackend.thbao.services.IPetReportService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,7 +22,7 @@ import java.util.List;
 import java.util.Optional;
 @Service
 @RequiredArgsConstructor
-public class PetReportService implements IPetReportService{
+public class PetReportService implements IPetReportService {
     private final UserRepository userRepository;
     private final PetMissingRepository petMissingRepository;
     private final PetReportRepository petReportRepository;

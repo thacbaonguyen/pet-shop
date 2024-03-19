@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
 
@@ -13,29 +14,30 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class PetReportDTO {
 
     @JsonProperty("phone_number")
     @NotEmpty(message = "Phone number cannot be empty")
-    private String phoneNumber;
+    String phoneNumber;
 
     @NotEmpty(message = "Address found cannot be empty")
     @JsonProperty("address_found")
-    private String addressFound;
+    String addressFound;
 
     @NotNull(message = "Time found cannot be null")
     @JsonProperty("time_found")
-    private LocalDate timeFound;
+    LocalDate timeFound;
 
-    private String health;
+    String health;
 
-    private String description;
+    String description;
 
     @JsonProperty("petmissing_id")
     @NotNull(message = "Pet ID cannot be empty")
-    private Long petMissingId;
+    Long petMissingId;
 
     @NotNull(message = "User ID cannot be empty")
     @JsonProperty("user_id")
-    private Long userId;
+    Long userId;
 }

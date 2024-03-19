@@ -1,4 +1,4 @@
-package com.petbackend.thbao.services;
+package com.petbackend.thbao.services.impl;
 
 import com.petbackend.thbao.dtos.MissingImageDTO;
 import com.petbackend.thbao.dtos.PetMissingDTO;
@@ -12,6 +12,7 @@ import com.petbackend.thbao.repositories.MissingImageRepository;
 import com.petbackend.thbao.repositories.PetMissingRepository;
 import com.petbackend.thbao.repositories.UserRepository;
 import com.petbackend.thbao.responses.PetMissingResponse;
+import com.petbackend.thbao.services.IPetMissingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,7 +26,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 
-public class PetMissingService implements IPetMissingService{
+public class PetMissingService implements IPetMissingService {
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
     private final PetMissingRepository petMissingRepository;

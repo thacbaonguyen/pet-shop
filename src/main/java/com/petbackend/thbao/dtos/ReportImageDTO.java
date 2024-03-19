@@ -2,6 +2,7 @@ package com.petbackend.thbao.dtos;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 @Data
 @Getter
@@ -9,9 +10,10 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class ReportImageDTO {
-    private String url;
+    String url;
 
     @JsonProperty("report_id")
-    private Long petReportId;
+    Long petReportId;
 }
