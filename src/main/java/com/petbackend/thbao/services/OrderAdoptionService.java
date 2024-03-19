@@ -49,8 +49,8 @@ public class OrderAdoptionService implements IOrderAdoptionService{
                 .user(user.get())
                 .petAdoption(petAdoption.get())
                 .build();
-        petAdoption.get().setActive(false);
         orderAdoptionRepository.save(orderAdoption);
+        petAdoption.get().setActive(false);
         return orderAdoption;
     }
 
@@ -92,7 +92,7 @@ public class OrderAdoptionService implements IOrderAdoptionService{
         if(user.getId() == petAdoption.getUser().getId()){
             throw new DataNotFoundException("You cannot adoption your pet");
         }
-        if(orderAdoptionDTO.getUserId() != user.getId()){
+        if(existOrderAdoption.getPetAdoption().getId() != orderAdoptionDTO.getPetAdoptionId()){
             if(!petAdoption.isActive()){
                 throw new DataNotFoundException("The pet has been claimed by someone else");
             }

@@ -45,6 +45,9 @@ public class PetReportService implements IPetReportService{
                 .user(user.get())
                 .petMissing(petMissing.get()).build();
         petReportRepository.save(petReport);
+        if (petMissing.get().getUser().getId() == petReportDTO.getUserId()){
+            throw new DataNotFoundException("You cannot report your pet");
+        }
         return petReport;
     }
 
