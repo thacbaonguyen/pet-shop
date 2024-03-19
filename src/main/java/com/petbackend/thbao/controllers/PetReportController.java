@@ -169,7 +169,7 @@ public class PetReportController {
     public ResponseEntity<?> deletePetReport(@PathVariable Long id){
         try {
             petReportService.delete(id);
-            return ResponseEntity.ok("deleted pet report successfully with id : " + id);
+            return ResponseEntity.ok("Delete pet report successfully");
         }
         catch (Exception e){
             return ResponseEntity.badRequest().body(e.getMessage());
