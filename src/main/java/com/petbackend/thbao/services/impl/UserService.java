@@ -70,13 +70,14 @@ public class UserService implements IUserService {
         if(!authenticated){
             throw new InvalidPasswordException("The password is incorrect");
         }
-        var token = generateToken(userLoginDTO, user.getId());
+        Role role = user.getRole();
+        var token = generateToken(userLoginDTO, role);
         return UserLoginResponse.builder()
                 .token(token)
                 .authenticated(authenticated)
                 .build();
     }
-    private String generateToken(UserLoginDTO userLoginDTO, Long id){
+    private String generateToken(UserLoginDTO userLoginDTO, Role role){
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS256);
         Date expirationTime = Date.from(ZonedDateTime.now().plusDays(20).toInstant());
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
@@ -84,7 +85,7 @@ public class UserService implements IUserService {
                 .issuer("pet-app.com")
                 .issueTime(new Date())
                 .expirationTime(expirationTime)
-                .claim("userId", id)
+                .claim("scope", role.getName())
                 .build();
         Payload payload = new Payload(jwtClaimsSet.toJSONObject());
         JWSObject  jwsObject = new JWSObject(header, payload);

@@ -10,12 +10,14 @@ import com.petbackend.thbao.responses.PetAdoptionResponse;
 import com.petbackend.thbao.services.IPetAdoptionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -35,6 +37,7 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("${api.prefix}/pet-adoptions")
+@Slf4j
 public class PetAdoptionController {
     private final IPetAdoptionService petAdoptionService;
     @PostMapping("")
@@ -101,6 +104,9 @@ public class PetAdoptionController {
     public ResponseEntity<?> getAllPetAdoptions(@RequestParam("page") int page,
                                                 @RequestParam("limit") int limit){
         try {
+            var authentication = SecurityContextHolder.getContext().getAuthentication();
+            log.info("username: {}", authentication.getName());
+            log.info("role: {}", authentication.getAuthorities());
             PageRequest pageRequest = PageRequest.of(page, limit, Sort.unsorted());
             Page<PetAdoptionResponse> petAdoptionResponse = petAdoptionService.getAllPetAdoption(pageRequest);
             int total = petAdoptionResponse.getTotalPages();
