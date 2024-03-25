@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -19,6 +20,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
     @Value("${api.prefix}")
     private String apiPrefix;
@@ -33,23 +35,26 @@ public class SecurityConfig {
                                     String.format("%s/users/login", apiPrefix),
                                     String.format("%s/users/introspect", apiPrefix))
                 .permitAll()
-                            //Category
-                            .requestMatchers(HttpMethod.GET, String.format("%s/categories/**", apiPrefix))
-                            .hasAnyRole(Role.ADMIN, Role.USER)
-                            .requestMatchers(HttpMethod.POST, String.format("%s/categories/**", apiPrefix))
-                            .hasRole(Role.ADMIN)
-                            .requestMatchers(HttpMethod.PUT, String.format("%s/categories/**", apiPrefix))
-                            .hasRole(Role.ADMIN)
-                            .requestMatchers(HttpMethod.DELETE, String.format("%s/categories/**", apiPrefix))
-                            .hasRole(Role.ADMIN)
+//                            //Category
+//                            .requestMatchers(HttpMethod.GET, String.format("%s/categories/**", apiPrefix))
+//                            .hasAnyRole(Role.ADMIN, Role.USER)
+//                            .requestMatchers(HttpMethod.POST, String.format("%s/categories/**", apiPrefix))
+//                            .hasRole(Role.ADMIN)
+//                            .requestMatchers(HttpMethod.PUT, String.format("%s/categories/**", apiPrefix))
+//                            .hasRole(Role.ADMIN)
+//                            .requestMatchers(HttpMethod.DELETE, String.format("%s/categories/**", apiPrefix))
+//                            .hasRole(Role.ADMIN)
+//
+//                            //Pet Missing
+//                            .requestMatchers(HttpMethod.GET, String.format("%s/pets/**", apiPrefix))
+//                            .hasAnyRole(Role.ADMIN, Role.USER)
+//                            .requestMatchers(HttpMethod.POST, String.format("%s/pets/**", apiPrefix))
+//                            .hasAnyRole(Role.ADMIN, Role.USER)
+//                            .requestMatchers(HttpMethod.PUT, String.format("%s/pets/**", apiPrefix))
+//                            .hasAnyRole(Role.ADMIN, Role.USER)
+//                            .requestMatchers(HttpMethod.DELETE, String.format("%s/pets/**", apiPrefix))
+//                            .hasAnyRole(Role.ADMIN, Role.USER)
 
-                            //Pet Missing
-                            .requestMatchers(HttpMethod.GET, String.format("%s/pets/**", apiPrefix))
-                            .hasAnyRole(Role.ADMIN, Role.USER)
-                            .requestMatchers(HttpMethod.POST, String.format("%s/pets/**", apiPrefix))
-                            .hasAnyRole(Role.ADMIN, Role.USER)
-                            .requestMatchers(HttpMethod.PUT, String.format("%s/pets/**", apiPrefix))
-                            .hasAnyRole(Role.ADMIN, Role.USER)
                 .anyRequest().authenticated());
         httpSecurity.oauth2ResourceServer(oAuth2 -> oAuth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder())
                 .jwtAuthenticationConverter(jwtAuthenticationConverter())));

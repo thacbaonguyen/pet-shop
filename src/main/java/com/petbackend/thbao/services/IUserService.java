@@ -20,4 +20,5 @@ public interface IUserService {
     UserLoginResponse login(UserLoginDTO userLoginDTO) throws DataNotFoundException, InvalidPasswordException;
 
     IntrospectResponse introspect(TokenDTO tokenDTO) throws JOSEException, ParseException;
+    User getMyInfo() throws DataNotFoundException;
 }

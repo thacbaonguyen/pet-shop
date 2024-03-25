@@ -1,9 +1,11 @@
 package com.petbackend.thbao.services.impl;
 
 import com.petbackend.thbao.dtos.OrderAdoptionDTO;
+import com.petbackend.thbao.exceptions.AccessDeniedException;
 import com.petbackend.thbao.exceptions.DataNotFoundException;
 import com.petbackend.thbao.models.OrderAdoption;
 import com.petbackend.thbao.models.PetAdoption;
+import com.petbackend.thbao.models.Role;
 import com.petbackend.thbao.models.User;
 import com.petbackend.thbao.repositories.OrderAdoptionRepository;
 import com.petbackend.thbao.repositories.PetAdoptionRepository;
@@ -13,6 +15,9 @@ import com.petbackend.thbao.services.IOrderAdoptionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -26,6 +31,7 @@ public class OrderAdoptionService implements IOrderAdoptionService {
     private final PetAdoptionRepository petAdoptionRepository;
     private final OrderAdoptionRepository orderAdoptionRepository;
     @Override
+    @PreAuthorize("hasRole('USER')")
     public OrderAdoption createOrderAdoption(OrderAdoptionDTO orderAdoptionDTO) throws DataNotFoundException {
         Optional<User> user = userRepository.findById(orderAdoptionDTO.getUserId());
         Optional<PetAdoption> petAdoption = petAdoptionRepository.findById(orderAdoptionDTO.getPetAdoptionId());
@@ -40,6 +46,12 @@ public class OrderAdoptionService implements IOrderAdoptionService {
         }
         if(!petAdoption.get().isActive()){
             throw new DataNotFoundException("The pet has been claimed by someone else");
+        }
+        var context = SecurityContextHolder.getContext();
+        String name = context.getAuthentication().getName();
+        // Chỉ tạo được đơn hàng cho bản thân
+        if(!user.get().getPhoneNumber().equals(name)){
+            throw new AccessDeniedException("You cannot create an order for someone else");
         }
         OrderAdoption orderAdoption = OrderAdoption.builder()
                 .fullName(orderAdoptionDTO.getFullName())
@@ -56,11 +68,22 @@ public class OrderAdoptionService implements IOrderAdoptionService {
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public Page<OrderAdoptionResponse> getAllOrderAdoption(PageRequest pageRequest) {
         return orderAdoptionRepository.findAll(pageRequest).map(OrderAdoptionResponse::fromOrderAdoptionResponse);
     }
     @Override
     public OrderAdoption getOrderAdoptionById(Long id) throws DataNotFoundException {
+        String role = String.valueOf(SecurityContextHolder.getContext().getAuthentication().getAuthorities());
+        String phoneNumber = SecurityContextHolder.getContext().getAuthentication().getName();
+        User existUser = userRepository.findByPhoneNumber(phoneNumber).orElseThrow(() ->
+                new DataNotFoundException("User not exist"));
+        if (!role.contains("ROLE_ADMIN")){
+            // Chỉ get được đơn hàng của bản thân
+            return orderAdoptionRepository.findByIdAndUserId(id, existUser.getId()).orElseThrow(()->
+                    new DataNotFoundException("Cannot found this order adoption"));
+        }
+        // nếu qua if, Admin có thế get hết
         return orderAdoptionRepository.findById(id).orElseThrow(()->
                 new DataNotFoundException("Cannot found this order adoption"));
     }
@@ -69,6 +92,14 @@ public class OrderAdoptionService implements IOrderAdoptionService {
     public List<OrderAdoption> getOrderAdoptionByUserId(Long userId) throws DataNotFoundException {
         User user = userRepository.findById(userId).orElseThrow(()->
                 new DataNotFoundException("Cannot found this user"));
+        String role = String.valueOf(SecurityContextHolder.getContext().getAuthentication().getAuthorities());
+        String phoneNumber = SecurityContextHolder.getContext().getAuthentication().getName();
+        User existUser = userRepository.findByPhoneNumber(phoneNumber).orElseThrow(() ->
+                new DataNotFoundException("User not exist"));
+        if (userId != existUser.getId() && !role.contains("ROLE_ADMIN")){
+            // Nếu role user lấy đơn hàng từ id người khác thì bị lỗi
+            throw new AccessDeniedException("You cannot access orders from other people");
+        }
         return orderAdoptionRepository.findByUserId(userId);
     }
 
@@ -76,6 +107,15 @@ public class OrderAdoptionService implements IOrderAdoptionService {
     public List<OrderAdoption> getOrderAdoptionByPetAdoptionId(Long petAdoptionId) throws DataNotFoundException {
         PetAdoption petAdoption = petAdoptionRepository.findById(petAdoptionId).orElseThrow(()->
                 new DataNotFoundException("Cannot found this pet adoption"));
+        String role = SecurityContextHolder.getContext().getAuthentication().getAuthorities().toString();
+        String phoneNumber = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByPhoneNumber(phoneNumber).orElseThrow(() ->
+                new DataNotFoundException("User not exist"));
+        if (!role.contains("ROLE_ADMIN")){
+            // Chỉ lấy được đơn hàng của bản thân
+            return orderAdoptionRepository.findByPetAdoptionIdAndUserId(petAdoptionId, user.getId());
+        }
+        // Admin get hết
         return orderAdoptionRepository.findByPetAdoptionId(petAdoptionId);
     }
     @Override
@@ -98,6 +138,11 @@ public class OrderAdoptionService implements IOrderAdoptionService {
                 throw new DataNotFoundException("The pet has been claimed by someone else");
             }
         }
+        String phoneNumber = SecurityContextHolder.getContext().getAuthentication().getName();
+        if(!user.getPhoneNumber().equals(phoneNumber)){
+            // chỉ update được đơn hàng của bản thân
+            throw new AccessDeniedException("You cannot update an order for someone else");
+        }
         existOrderAdoption.setUser(user);
         existOrderAdoption.setPetAdoption(petAdoption);
         orderAdoptionRepository.save(existOrderAdoption);
@@ -106,7 +151,15 @@ public class OrderAdoptionService implements IOrderAdoptionService {
 
     @Override
     public void delete(long id) throws DataNotFoundException {
-        orderAdoptionRepository.delete(orderAdoptionRepository.findById(id).orElseThrow(()->
-                new DataNotFoundException("Cannot found this order adoption")));
+        OrderAdoption orderAdoption = orderAdoptionRepository.findById(id).orElseThrow(()->
+                new DataNotFoundException("Cannot found this order adoption"));
+        String phoneNumber = SecurityContextHolder.getContext().getAuthentication().getName();
+        String role = SecurityContextHolder.getContext().getAuthentication().getAuthorities().toString();
+        User user = userRepository.findByPhoneNumber(phoneNumber).orElseThrow(() ->
+                new DataNotFoundException("User not exist"));
+        if (user.getId() != orderAdoption.getUser().getId() && !role.contains("ROLE_ADMIN")){
+            throw new AccessDeniedException("You cannot delete this order");
+        }
+        orderAdoptionRepository.delete(orderAdoption);
     }
 }

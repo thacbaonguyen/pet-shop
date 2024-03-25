@@ -41,4 +41,5 @@ public class OrderAdoption {
     @OneToOne
     @JoinColumn(name = "pet_adoption_id")
     private PetAdoption petAdoption;
+
 }

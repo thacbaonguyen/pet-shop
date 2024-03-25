@@ -5,6 +5,7 @@ import com.petbackend.thbao.models.Category;
 import com.petbackend.thbao.repositories.CategoryRepository;
 import com.petbackend.thbao.services.ICategoryService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.List;
 public class CategoryService implements ICategoryService {
     private final CategoryRepository categoryRepository;
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public Category createCategory(CategoryDTO categoryDTO) {
         Category category = new Category();
         category = Category.builder()
@@ -27,6 +29,7 @@ public class CategoryService implements ICategoryService {
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public Category updateCategory(Long id, CategoryDTO categoryDTO) {
         Category category = categoryRepository.findById(id).orElseThrow(()->
                 new RuntimeException("Cannot found category with id = " + id));
@@ -37,6 +40,7 @@ public class CategoryService implements ICategoryService {
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteCategory(Long id) {
         categoryRepository.deleteById(id);
     }

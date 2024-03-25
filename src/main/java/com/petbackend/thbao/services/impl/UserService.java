@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -95,6 +96,13 @@ public class UserService implements IUserService {
         } catch (JOSEException e) {
             throw new RuntimeException(e);
         }
+    }
+    public User getMyInfo() throws DataNotFoundException {
+        var context = SecurityContextHolder.getContext();
+        String name = context.getAuthentication().getName();
+        User user = userRepository.findByPhoneNumber(name).orElseThrow(() ->
+                new DataNotFoundException("Cannot not existing"));
+        return user;
     }
     public IntrospectResponse introspect(TokenDTO tokenDTO) throws JOSEException, ParseException {
         JWSVerifier verifier = new MACVerifier(secretKey.getBytes());

@@ -38,6 +38,15 @@ public class UserController {
         User user = userService.createUser(userDTO);
         return ResponseEntity.ok(user);
     }
+    @GetMapping("/my-info")
+    public ResponseEntity<?> getMyInfo(){
+        try {
+            User user = userService.getMyInfo();
+            return ResponseEntity.ok(user);
+        } catch (DataNotFoundException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody UserLoginDTO userLoginDTO){
         try {
