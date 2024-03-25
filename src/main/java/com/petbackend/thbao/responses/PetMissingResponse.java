@@ -17,6 +17,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 public class PetMissingResponse {
+    private Long id;
     private String name;
 
     private String color;
@@ -37,6 +38,7 @@ public class PetMissingResponse {
 
     public static final PetMissingResponse fromPetMissingResponse(PetMissing petMissing){
         return PetMissingResponse.builder()
+                .id(petMissing.getId())
                 .name(petMissing.getName())
                 .color(petMissing.getColor())
                 .age(petMissing.getAge())

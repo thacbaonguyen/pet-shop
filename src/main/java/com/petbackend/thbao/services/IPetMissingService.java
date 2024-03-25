@@ -14,10 +14,10 @@ import java.util.List;
 public interface IPetMissingService {
     PetMissing createPetMissing(PetMissingDTO petMissingDTO) throws DataNotFoundException;
 
-    PetMissing getPetMissingById(Long id);
+    PetMissing getPetMissingById(Long id) throws DataNotFoundException;
 
-    List<PetMissing> getPetMissingByUserId(Long userId);
-    List<PetMissing> getPetMissingByCategoryId(Long categoryId);
+    List<PetMissing> getPetMissingByUserId(Long userId) throws DataNotFoundException;
+    List<PetMissing> getPetMissingByCategoryId(Long categoryId) throws DataNotFoundException;
 
     Page<PetMissingResponse> getAllPetMissing(PageRequest pageRequest);
 

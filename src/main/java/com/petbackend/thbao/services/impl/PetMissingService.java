@@ -2,6 +2,7 @@ package com.petbackend.thbao.services.impl;
 
 import com.petbackend.thbao.dtos.MissingImageDTO;
 import com.petbackend.thbao.dtos.PetMissingDTO;
+import com.petbackend.thbao.exceptions.AccessDeniedException;
 import com.petbackend.thbao.exceptions.DataNotFoundException;
 import com.petbackend.thbao.models.Category;
 import com.petbackend.thbao.models.MissingImage;
@@ -16,6 +17,7 @@ import com.petbackend.thbao.services.IPetMissingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.DateTimeException;
@@ -41,8 +43,13 @@ public class PetMissingService implements IPetMissingService {
         if(!category.isPresent()){
             throw new DataNotFoundException("Cannot found category");
         }
-        LocalDate missingTimeString = petMissingDTO.getMissingTime();
+        String name = SecurityContextHolder.getContext().getAuthentication().getName();
+        // Chỉ tạo được đơn trình báo cho bản thân
+        if(!user.get().getPhoneNumber().equals(name)){
+            throw new AccessDeniedException("You cannot create an missing for someone else");
+        }
 
+        LocalDate missingTimeString = petMissingDTO.getMissingTime();
         PetMissing petMissing = PetMissing.builder()
                 .name(petMissingDTO.getName())
                 .color(petMissingDTO.getColor())
@@ -58,20 +65,20 @@ public class PetMissingService implements IPetMissingService {
     }
 
     @Override
-    public PetMissing getPetMissingById(Long id) {
+    public PetMissing getPetMissingById(Long id) throws DataNotFoundException {
         return petMissingRepository.findById(id).orElseThrow(()->new DateTimeException("Cannot found Pet missing"));
     }
 
     @Override
-    public List<PetMissing> getPetMissingByUserId(Long userId) {
-        List<PetMissing> list = petMissingRepository.findByUserId(userId);
-        return list;
+    public List<PetMissing> getPetMissingByUserId(Long userId) throws DataNotFoundException {
+        User user = userRepository.findById(userId).orElseThrow(()->
+                new DataNotFoundException("Cannot found user"));
+        return petMissingRepository.findByUserId(userId);
     }
 
     @Override
-    public List<PetMissing> getPetMissingByCategoryId(Long categoryId) {
-        List<PetMissing> list = petMissingRepository.findByCategoryId(categoryId);
-        return list;
+    public List<PetMissing> getPetMissingByCategoryId(Long categoryId) throws DataNotFoundException {
+        return petMissingRepository.findByCategoryId(categoryId);
     }
 
     @Override
@@ -93,6 +100,11 @@ public class PetMissingService implements IPetMissingService {
                 new DataNotFoundException("Cannot found category"));
         User user = userRepository.findById(petMissingDTO.getUserId()).orElseThrow(()->
                 new DataNotFoundException("Cannot found user"));
+        String phoneNumber = SecurityContextHolder.getContext().getAuthentication().getName();
+        if(!petMissing.getUser().getPhoneNumber().equals(phoneNumber)){
+            // chỉ update được bao cao của bản thân
+            throw new AccessDeniedException("You cannot update an missing for someone else");
+        }
         petMissing.setCategory(category);
         petMissing.setUser(user);
         petMissingRepository.save(petMissing);
@@ -103,6 +115,13 @@ public class PetMissingService implements IPetMissingService {
     public void delete(Long id) throws DataNotFoundException {
         PetMissing petMissing = petMissingRepository.findById(id).orElseThrow(()->
                 new DataNotFoundException("Cannot found Pet missing"));
+        String phoneNumber = SecurityContextHolder.getContext().getAuthentication().getName();
+        String role = SecurityContextHolder.getContext().getAuthentication().getAuthorities().toString();
+        User user = userRepository.findByPhoneNumber(phoneNumber).orElseThrow(() ->
+                new DataNotFoundException("User not exist"));
+        if (user.getId() != petMissing.getUser().getId() && !role.contains("ROLE_ADMIN")){
+            throw new AccessDeniedException("You cannot delete for someone else missing");
+        }
         petMissingRepository.delete(petMissing);
     }
 
@@ -110,6 +129,13 @@ public class PetMissingService implements IPetMissingService {
     public MissingImage createMissingImage(Long id, MissingImageDTO missingImageDTO) throws DataNotFoundException {
         PetMissing petMissing = petMissingRepository.findById(id).orElseThrow(()->
                 new DataNotFoundException("Cannot found Pet missing"));
+        String phoneNumber = SecurityContextHolder.getContext().getAuthentication().getName();
+        String role = SecurityContextHolder.getContext().getAuthentication().getAuthorities().toString();
+        User user = userRepository.findByPhoneNumber(phoneNumber).orElseThrow(() ->
+                new DataNotFoundException("User not exist"));
+        if (user.getId() != petMissing.getUser().getId() && !role.contains("ROLE_ADMIN")){
+            throw new AccessDeniedException("You cannot import image for someone else missing");
+        }
         MissingImage missingImage = MissingImage.builder()
                 .petMissing(petMissing)
                 .url(missingImageDTO.getUrl()).build();

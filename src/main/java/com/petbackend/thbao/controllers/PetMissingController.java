@@ -109,7 +109,7 @@ public class PetMissingController {
         }
     }
     @GetMapping("/{id}")
-    public ResponseEntity<?> getPetMissingById(@PathVariable Long id){
+    public ResponseEntity<?> getPetMissingById(@PathVariable Long id) throws DataNotFoundException {
         PetMissing petMissing = petMissingService.getPetMissingById(id);
         return ResponseEntity.ok(PetMissingResponse.fromPetMissingResponse(petMissing));
     }

@@ -47,8 +47,7 @@ public class OrderAdoptionService implements IOrderAdoptionService {
         if(!petAdoption.get().isActive()){
             throw new DataNotFoundException("The pet has been claimed by someone else");
         }
-        var context = SecurityContextHolder.getContext();
-        String name = context.getAuthentication().getName();
+        String name = SecurityContextHolder.getContext().getAuthentication().getName();
         // Chỉ tạo được đơn hàng cho bản thân
         if(!user.get().getPhoneNumber().equals(name)){
             throw new AccessDeniedException("You cannot create an order for someone else");
@@ -64,6 +63,7 @@ public class OrderAdoptionService implements IOrderAdoptionService {
                 .build();
         orderAdoptionRepository.save(orderAdoption);
         petAdoption.get().setActive(false);
+        petAdoptionRepository.save(petAdoption.get());
         return orderAdoption;
     }
 
@@ -139,7 +139,7 @@ public class OrderAdoptionService implements IOrderAdoptionService {
             }
         }
         String phoneNumber = SecurityContextHolder.getContext().getAuthentication().getName();
-        if(!user.getPhoneNumber().equals(phoneNumber)){
+        if(!existOrderAdoption.getUser().getPhoneNumber().equals(phoneNumber)){
             // chỉ update được đơn hàng của bản thân
             throw new AccessDeniedException("You cannot update an order for someone else");
         }

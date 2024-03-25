@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class PetReportResponse {
+    private Long id;
     private String phoneNumber;
 
     private String addressFound;
@@ -34,6 +35,7 @@ public class PetReportResponse {
 
     public static final PetReportResponse fromPetReportResponse(PetReport petReport){
         return PetReportResponse.builder()
+                .id(petReport.getId())
                 .phoneNumber(petReport.getPhoneNumber())
                 .addressFound(petReport.getAddressFound())
                 .timeFound(petReport.getTimeFound())

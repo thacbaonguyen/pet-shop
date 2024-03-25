@@ -11,7 +11,10 @@ import com.petbackend.thbao.services.IProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +22,7 @@ public class ProductService implements IProductService {
     private final ProductRepository productRepository;
     private final ProductImageRepository productImageRepository;
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public Product createProduct(ProductDTO productDTO) {
         Product product = Product.builder()
                 .name(productDTO.getName())
@@ -38,6 +42,7 @@ public class ProductService implements IProductService {
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public Product updateProduct(Long id, ProductDTO productDTO) throws DataNotFoundException {
         Product existProduct = productRepository.findById(id).orElseThrow(()->
                 new DataNotFoundException("Cannot found this product"));
@@ -49,6 +54,7 @@ public class ProductService implements IProductService {
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public void delete(Long id) throws DataNotFoundException {
         Product existProduct = productRepository.findById(id).orElseThrow(()->
                 new DataNotFoundException("Cannot found this product"));
@@ -56,6 +62,7 @@ public class ProductService implements IProductService {
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public ProductImage createProductImage(Long productId, ProductImageDTO productImageDTO) throws DataNotFoundException {
         Product existProduct = productRepository.findById(productId).orElseThrow(()->
                 new DataNotFoundException("Cannot found this product"));

@@ -2,6 +2,7 @@ package com.petbackend.thbao.services.impl;
 
 import com.petbackend.thbao.dtos.AdoptionImageDTO;
 import com.petbackend.thbao.dtos.PetAdoptionDTO;
+import com.petbackend.thbao.exceptions.AccessDeniedException;
 import com.petbackend.thbao.exceptions.DataNotFoundException;
 import com.petbackend.thbao.models.AdoptionImage;
 import com.petbackend.thbao.models.Category;
@@ -16,6 +17,8 @@ import com.petbackend.thbao.services.IPetAdoptionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -34,6 +37,10 @@ public class PetAdoptionService implements IPetAdoptionService {
     public PetAdoption createPetAdoption(PetAdoptionDTO petAdoptionDTO) throws DataNotFoundException {
         Optional<User> user = userRepository.findById(petAdoptionDTO.getUserId());
         Optional<Category> category = categoryRepository.findById(petAdoptionDTO.getCategoryId());
+        String name = SecurityContextHolder.getContext().getAuthentication().getName();
+        if (!user.get().getPhoneNumber().equals(name)){
+            throw new AccessDeniedException("You cannot create an adoption for someone else");
+        }
         if(!user.isPresent()){
             throw new DataNotFoundException("Cannot found user");
         }
@@ -70,16 +77,14 @@ public class PetAdoptionService implements IPetAdoptionService {
     @Override
     public List<PetAdoption> getPetAdoptionByUserId(Long userId) throws DataNotFoundException {
         User user = userRepository.findById(userId).orElseThrow(()-> new DataNotFoundException("Cannot found this user"));
-        List<PetAdoption> list = petAdoptionRepository.findByUserId(userId);
-        return list;
+        return petAdoptionRepository.findByUserId(userId);
     }
 
     @Override
     public List<PetAdoption> getPetAdoptionByCategoryId(Long categoryId) throws DataNotFoundException {
         Category category = categoryRepository.findById(categoryId).orElseThrow(()->
                 new DataNotFoundException("Cannot found this category"));
-        List<PetAdoption> list = petAdoptionRepository.findByCategoryId(categoryId);
-        return list;
+        return petAdoptionRepository.findByCategoryId(categoryId);
     }
 
     @Override
@@ -98,6 +103,11 @@ public class PetAdoptionService implements IPetAdoptionService {
                 new DataNotFoundException("Cannot found this user"));
         Category category = categoryRepository.findById(petAdoptionDTO.getCategoryId()).orElseThrow(()->
                 new DataNotFoundException("Cannot found this category"));
+        String phoneNumber = SecurityContextHolder.getContext().getAuthentication().getName();
+        if(!petAdoption.getUser().getPhoneNumber().equals(phoneNumber)){
+            // chỉ update được adoption của bản thân
+            throw new AccessDeniedException("You cannot update an adoption for someone else");
+        }
         petAdoption.setUser(user);
         petAdoption.setCategory(category);
         petAdoptionRepository.save(petAdoption);
@@ -108,13 +118,28 @@ public class PetAdoptionService implements IPetAdoptionService {
     public void delete(Long id) throws DataNotFoundException {
         PetAdoption petAdoption = petAdoptionRepository.findById(id).orElseThrow(()->
                 new DataNotFoundException("Cannot found this Pet adoption"));
+        String phoneNumber = SecurityContextHolder.getContext().getAuthentication().getName();
+        String role = SecurityContextHolder.getContext().getAuthentication().getAuthorities().toString();
+        User user = userRepository.findByPhoneNumber(phoneNumber).orElseThrow(() ->
+                new DataNotFoundException("User not exist"));
+        if (user.getId() != petAdoption.getUser().getId() && !role.contains("ROLE_ADMIN")){
+            throw new AccessDeniedException("You cannot delete this order");
+        }
         petAdoptionRepository.delete(petAdoption);
     }
 
     @Override
-    public AdoptionImage createAdoptionImage(Long petAdoptionId, AdoptionImageDTO adoptionImageDTO) throws DataNotFoundException {
+    public AdoptionImage createAdoptionImage(Long petAdoptionId, AdoptionImageDTO adoptionImageDTO)
+            throws DataNotFoundException {
         PetAdoption petAdoption = petAdoptionRepository.findById(petAdoptionId).orElseThrow(()->
                 new DataNotFoundException("Cannot found this Pet adoption"));
+        String phoneNumber = SecurityContextHolder.getContext().getAuthentication().getName();
+        String role = SecurityContextHolder.getContext().getAuthentication().getAuthorities().toString();
+        User user = userRepository.findByPhoneNumber(phoneNumber).orElseThrow(() ->
+                new DataNotFoundException("User not exist"));
+        if (user.getId() != petAdoption.getUser().getId() && !role.contains("ROLE_ADMIN")){
+            throw new AccessDeniedException("You cannot delete this order");
+        }
         AdoptionImage adoptionImage = AdoptionImage.builder()
                 .url(adoptionImageDTO.getUrl())
                 .petAdoption(petAdoption).build();

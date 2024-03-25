@@ -16,6 +16,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class PetAdoptionResponse {
+    private Long id;
     private String name;
 
     private String color;
@@ -39,6 +40,7 @@ public class PetAdoptionResponse {
     private Long userId;
     public static final PetAdoptionResponse fromPetAdoptionResponse(PetAdoption petAdoption){
         return PetAdoptionResponse.builder()
+                .id(petAdoption.getId())
                 .name(petAdoption.getName())
                 .color(petAdoption.getColor())
                 .age(petAdoption.getAge())
