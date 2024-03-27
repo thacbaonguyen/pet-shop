@@ -8,6 +8,7 @@ import com.nimbusds.jwt.SignedJWT;
 import com.petbackend.thbao.dtos.TokenDTO;
 import com.petbackend.thbao.dtos.UserDTO;
 import com.petbackend.thbao.dtos.UserLoginDTO;
+import com.petbackend.thbao.exceptions.AccountNotActivatedException;
 import com.petbackend.thbao.exceptions.DataNotFoundException;
 import com.petbackend.thbao.exceptions.InvalidPasswordException;
 import com.petbackend.thbao.exceptions.PermissionDenyException;
@@ -18,6 +19,9 @@ import com.petbackend.thbao.repositories.UserRepository;
 import com.petbackend.thbao.responses.IntrospectResponse;
 import com.petbackend.thbao.responses.UserLoginResponse;
 import com.petbackend.thbao.services.IUserService;
+import com.petbackend.thbao.utils.EmailUtil;
+import com.petbackend.thbao.utils.OtpUtil;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -28,6 +32,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.Date;
 
@@ -36,10 +42,18 @@ import java.util.Date;
 public class UserService implements IUserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final OtpUtil otpUtil;
+    private final EmailUtil emailUtil;
     @Value("${jwt.secretKey}")
     private String secretKey;
     @Override
     public User createUser(UserDTO userDTO) throws DataNotFoundException, PermissionDenyException {
+        String otp = otpUtil.generateOtp();
+        try {
+            emailUtil.sendOtpEmail(userDTO.getEmail(), otp);
+        } catch (MessagingException e) {
+            throw new RuntimeException("Unable to send otp please try again");
+        }
         String phoneNumber = userDTO.getPhoneNumber();
         if(userRepository.existsByPhoneNumber(phoneNumber)){
             throw new DataIntegrityViolationException("Phone number already exist");
@@ -55,21 +69,54 @@ public class UserService implements IUserService {
                 .address(userDTO.getAddress())
                 .password(userDTO.getPassword())
                 .email(userDTO.getEmail())
-                .active(true)
+                .otp(otp)
+                .otpGeneratedTime(LocalDateTime.now())
                 .build();
         user.setRole(role);
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         return userRepository.save(user);
     }
+
     @Override
-    public UserLoginResponse login(UserLoginDTO userLoginDTO) throws DataNotFoundException, InvalidPasswordException {
+    public String verifyAccount(String email, String otp) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found with this email: " + email));
+        if (user.getOtp().equals(otp) && Duration.between(user.getOtpGeneratedTime(),
+                LocalDateTime.now()).getSeconds() < (1 * 60)) {
+            user.setActive(true);
+            userRepository.save(user);
+            return "OTP verified you can login";
+        }
+        return "Please regenerate otp and try again";
+    }
+    @Override
+    public String regenerateOtp(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found with this email: " + email));
+        String otp = otpUtil.generateOtp();
+        try {
+            emailUtil.sendOtpEmail(email, otp);
+        } catch (MessagingException e) {
+            throw new RuntimeException("Unable to send otp please try again");
+        }
+        user.setOtp(otp);
+        user.setOtpGeneratedTime(LocalDateTime.now());
+        userRepository.save(user);
+        return "Email sent... please verify account within 1 minute";
+    }
+    @Override
+    public UserLoginResponse login(UserLoginDTO userLoginDTO) throws DataNotFoundException,
+            InvalidPasswordException, AccountNotActivatedException {
         User user = userRepository.findByPhoneNumber(userLoginDTO.getPhoneNumber()).orElseThrow(()->
                 new DataNotFoundException("Cannot found user with phone number"));
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         boolean authenticated = passwordEncoder.matches(userLoginDTO.getPassword(), user.getPassword());
         if(!authenticated){
             throw new InvalidPasswordException("The password is incorrect");
+        }
+        if (!user.isActive()){
+            throw new AccountNotActivatedException("The account has not been activated");
         }
         Role role = user.getRole();
         var token = generateToken(userLoginDTO, role);

@@ -13,6 +13,7 @@ import com.petbackend.thbao.responses.UserLoginResponse;
 import com.petbackend.thbao.services.IUserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -37,6 +38,15 @@ public class UserController {
         }
         User user = userService.createUser(userDTO);
         return ResponseEntity.ok(user);
+    }
+    @PutMapping("/verify-account")
+    public ResponseEntity<String> verifyAccount(@RequestParam String email,
+                                                @RequestParam String otp) {
+        return new ResponseEntity<>(userService.verifyAccount(email, otp), HttpStatus.OK);
+    }
+    @PutMapping("/regenerate-otp")
+    public ResponseEntity<String> regenerateOtp(@RequestParam String email) {
+        return new ResponseEntity<>(userService.regenerateOtp(email), HttpStatus.OK);
     }
     @GetMapping("/my-info")
     public ResponseEntity<?> getMyInfo(){
