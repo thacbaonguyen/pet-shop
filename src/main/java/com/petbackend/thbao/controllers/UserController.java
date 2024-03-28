@@ -10,6 +10,7 @@ import com.petbackend.thbao.exceptions.PermissionDenyException;
 import com.petbackend.thbao.models.User;
 import com.petbackend.thbao.responses.IntrospectResponse;
 import com.petbackend.thbao.responses.UserLoginResponse;
+import com.petbackend.thbao.responses.UserResponse;
 import com.petbackend.thbao.services.IUserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -52,7 +53,7 @@ public class UserController {
     public ResponseEntity<?> getMyInfo(){
         try {
             User user = userService.getMyInfo();
-            return ResponseEntity.ok(user);
+            return ResponseEntity.ok(UserResponse.fromUserResponse(user));
         } catch (DataNotFoundException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -66,9 +67,27 @@ public class UserController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+    @PutMapping("/forgot-password")
+    public ResponseEntity<String> forgotPassword(@RequestParam String email){
+        try {
+            return ResponseEntity.ok(userService.forgotPassword(email));
+        } catch (DataNotFoundException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    @PutMapping("/set-password")
+    public ResponseEntity<?> setPasswordEmail(@RequestParam String email,
+                                              @RequestParam String otp,
+                                              @RequestHeader String newPassword){
+        try {
+            User user = userService.setPassword(email,otp, newPassword);
+            return ResponseEntity.ok(UserResponse.fromUserResponse(user));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
     @PostMapping("/introspect")
     public ResponseEntity<?> introspect(@RequestBody TokenDTO tokenDTO) throws ParseException, JOSEException {
-
             IntrospectResponse introspectResponse = userService.introspect(tokenDTO);
             return ResponseEntity.ok(introspectResponse);
 

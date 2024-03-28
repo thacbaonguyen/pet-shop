@@ -26,4 +26,17 @@ public class EmailUtil {
 
         javaMailSender.send(mimeMessage);
     }
+    public void sentSetPasswordEmail(String email, String otp) throws MessagingException {
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
+        mimeMessageHelper.setTo(email);
+        mimeMessageHelper.setSubject("Set your password");
+        mimeMessageHelper.setText("""
+        <div>
+          <a href="http://localhost:8080/set-password?email=%s&otp=%s" target="_blank">click link set password</a>
+        </div>
+        """.formatted(email, otp), true);
+
+        javaMailSender.send(mimeMessage);
+    }
 }

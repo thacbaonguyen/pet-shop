@@ -8,7 +8,7 @@ import com.nimbusds.jwt.SignedJWT;
 import com.petbackend.thbao.dtos.TokenDTO;
 import com.petbackend.thbao.dtos.UserDTO;
 import com.petbackend.thbao.dtos.UserLoginDTO;
-import com.petbackend.thbao.exceptions.AccountNotActivatedException;
+import com.petbackend.thbao.exceptions.InvalidAccountException;
 import com.petbackend.thbao.exceptions.DataNotFoundException;
 import com.petbackend.thbao.exceptions.InvalidPasswordException;
 import com.petbackend.thbao.exceptions.PermissionDenyException;
@@ -22,10 +22,11 @@ import com.petbackend.thbao.services.IUserService;
 import com.petbackend.thbao.utils.EmailUtil;
 import com.petbackend.thbao.utils.OtpUtil;
 import jakarta.mail.MessagingException;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -39,11 +40,12 @@ import java.util.Date;
 
 @Service
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserService implements IUserService {
-    private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
-    private final OtpUtil otpUtil;
-    private final EmailUtil emailUtil;
+    final UserRepository userRepository;
+    final RoleRepository roleRepository;
+    final OtpUtil otpUtil;
+    final EmailUtil emailUtil;
     @Value("${jwt.secretKey}")
     private String secretKey;
     @Override
@@ -107,7 +109,7 @@ public class UserService implements IUserService {
     }
     @Override
     public UserLoginResponse login(UserLoginDTO userLoginDTO) throws DataNotFoundException,
-            InvalidPasswordException, AccountNotActivatedException {
+            InvalidPasswordException, InvalidAccountException {
         User user = userRepository.findByPhoneNumber(userLoginDTO.getPhoneNumber()).orElseThrow(()->
                 new DataNotFoundException("Cannot found user with phone number"));
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
@@ -116,7 +118,7 @@ public class UserService implements IUserService {
             throw new InvalidPasswordException("The password is incorrect");
         }
         if (!user.isActive()){
-            throw new AccountNotActivatedException("The account has not been activated");
+            throw new InvalidAccountException("The account has not been activated");
         }
         Role role = user.getRole();
         var token = generateToken(userLoginDTO, role);
@@ -125,7 +127,35 @@ public class UserService implements IUserService {
                 .authenticated(authenticated)
                 .build();
     }
-    private String generateToken(UserLoginDTO userLoginDTO, Role role){
+    @Override
+    public String forgotPassword(String email) throws DataNotFoundException {
+        String otp = otpUtil.generateOtp();
+        User user = userRepository.findByEmail(email).orElseThrow(() ->
+                new DataNotFoundException("User not exist"));
+        try {
+            emailUtil.sentSetPasswordEmail(email, otp);
+        } catch (MessagingException e) {
+            throw new RuntimeException("Unable to send set password email please try again");
+        }
+        user.setOtp(otp);
+        user.setOtpGeneratedTime(LocalDateTime.now());
+        userRepository.save(user);
+        return "Please check your email to set password";
+    }
+    @Override
+    public User setPassword(String email, String otp, String newPassword) throws DataNotFoundException, InvalidAccountException {
+        User user = userRepository.findByEmail(email).orElseThrow(() ->
+                new DataNotFoundException("User not exist"));
+        if (user.getOtp().equals(otp) && Duration.between(user.getOtpGeneratedTime(),
+                LocalDateTime.now()).getSeconds() < (1 * 60)){
+            PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+            user.setPassword(passwordEncoder.encode(newPassword));
+            userRepository.save(user);
+            return user;
+        }
+        throw new InvalidAccountException("Please check again your otp or regenerate otp");
+    }
+    public String generateToken(UserLoginDTO userLoginDTO, Role role){
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS256);
         Date expirationTime = Date.from(ZonedDateTime.now().plusDays(20).toInstant());
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
@@ -144,6 +174,7 @@ public class UserService implements IUserService {
             throw new RuntimeException(e);
         }
     }
+    @Override
     public User getMyInfo() throws DataNotFoundException {
         var context = SecurityContextHolder.getContext();
         String name = context.getAuthentication().getName();
@@ -151,6 +182,7 @@ public class UserService implements IUserService {
                 new DataNotFoundException("Cannot not existing"));
         return user;
     }
+    @Override
     public IntrospectResponse introspect(TokenDTO tokenDTO) throws JOSEException, ParseException {
         JWSVerifier verifier = new MACVerifier(secretKey.getBytes());
         SignedJWT signedJWT = SignedJWT.parse(tokenDTO.getToken());
