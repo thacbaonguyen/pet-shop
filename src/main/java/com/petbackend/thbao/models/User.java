@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -41,6 +42,9 @@ public class    User extends BaseEntity {
 
     @Column(name = "otp_generated_time")
     private LocalDateTime otpGeneratedTime;
+
+    @Column(name = "date_of_birth")
+    private LocalDate dateOfBirth;
 
     @ManyToOne
     @JoinColumn(name = "role_id")

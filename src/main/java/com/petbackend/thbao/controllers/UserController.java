@@ -38,7 +38,7 @@ public class UserController {
             return ResponseEntity.badRequest().body("Password does not match");
         }
         User user = userService.createUser(userDTO);
-        return ResponseEntity.ok(user);
+        return ResponseEntity.ok(UserResponse.fromUserResponse(user));
     }
     @PutMapping("/verify-account")
     public ResponseEntity<String> verifyAccount(@RequestParam String email,
@@ -91,5 +91,9 @@ public class UserController {
             IntrospectResponse introspectResponse = userService.introspect(tokenDTO);
             return ResponseEntity.ok(introspectResponse);
 
+    }
+    @GetMapping("/secured")
+    public String secured(){
+        return "Hello, secured";
     }
 }

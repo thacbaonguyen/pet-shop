@@ -73,6 +73,7 @@ public class UserService implements IUserService {
                 .email(userDTO.getEmail())
                 .otp(otp)
                 .otpGeneratedTime(LocalDateTime.now())
+                .dateOfBirth(userDTO.getDateOfBirth())
                 .build();
         user.setRole(role);
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);

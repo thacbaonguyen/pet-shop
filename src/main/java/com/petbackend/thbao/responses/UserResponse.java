@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -26,6 +27,10 @@ public class UserResponse {
 
     String email;
 
+    LocalDate dateOfBirth;
+
+    boolean isActive;
+
     Role role;
     public static final UserResponse fromUserResponse(User user){
         return UserResponse.builder()
@@ -34,7 +39,9 @@ public class UserResponse {
                 .phoneNumber(user.getPhoneNumber())
                 .address(user.getAddress())
                 .email(user.getEmail())
+                .dateOfBirth(user.getDateOfBirth())
                 .role(user.getRole())
+                .isActive(user.isActive())
                 .build();
     }
 }

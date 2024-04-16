@@ -28,7 +28,6 @@ public class SecurityConfig {
 
     @Value("${jwt.secretKey}")
     private String secretKey;
-    private final String[] PUBLIC_ENDPOINTS = {String.format("%s/users/register", apiPrefix), String.format("%s/users/login", apiPrefix)};
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests(request ->
@@ -36,26 +35,7 @@ public class SecurityConfig {
                                     String.format("%s/users/login", apiPrefix),
                                     String.format("%s/users/introspect", apiPrefix))
                 .permitAll()
-//                            //Category
-//                            .requestMatchers(HttpMethod.GET, String.format("%s/categories/**", apiPrefix))
-//                            .hasAnyRole(Role.ADMIN, Role.USER)
-//                            .requestMatchers(HttpMethod.POST, String.format("%s/categories/**", apiPrefix))
-//                            .hasRole(Role.ADMIN)
-//                            .requestMatchers(HttpMethod.PUT, String.format("%s/categories/**", apiPrefix))
-//                            .hasRole(Role.ADMIN)
-//                            .requestMatchers(HttpMethod.DELETE, String.format("%s/categories/**", apiPrefix))
-//                            .hasRole(Role.ADMIN)
-//
-//                            //Pet Missing
-//                            .requestMatchers(HttpMethod.GET, String.format("%s/pets/**", apiPrefix))
-//                            .hasAnyRole(Role.ADMIN, Role.USER)
-//                            .requestMatchers(HttpMethod.POST, String.format("%s/pets/**", apiPrefix))
-//                            .hasAnyRole(Role.ADMIN, Role.USER)
-//                            .requestMatchers(HttpMethod.PUT, String.format("%s/pets/**", apiPrefix))
-//                            .hasAnyRole(Role.ADMIN, Role.USER)
-//                            .requestMatchers(HttpMethod.DELETE, String.format("%s/pets/**", apiPrefix))
-//                            .hasAnyRole(Role.ADMIN, Role.USER)
-
+                            .requestMatchers(HttpMethod.GET, String.format("%s/users/secured", apiPrefix)).permitAll()
                 .anyRequest().authenticated());
         httpSecurity.oauth2ResourceServer(oAuth2 -> oAuth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder())
                 .jwtAuthenticationConverter(jwtAuthenticationConverter())));
