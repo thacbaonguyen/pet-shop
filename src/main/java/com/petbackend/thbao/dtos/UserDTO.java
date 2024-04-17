@@ -1,9 +1,8 @@
 package com.petbackend.thbao.dtos;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.petbackend.thbao.annotation.BirthDate;
+import com.petbackend.thbao.annotation.ValidDateOfBirth;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -42,8 +41,7 @@ public class UserDTO {
     String email;
 
     @JsonProperty("date_of_birth")
-    @BirthDate
-    @NotNull(message = "Date of birth cannot be empty")
+    @ValidDateOfBirth(message = "Please verify your birthday again")
     LocalDate dateOfBirth;
 
     @NotNull(message = "Role ID cannot be empty")

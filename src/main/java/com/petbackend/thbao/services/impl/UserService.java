@@ -49,7 +49,7 @@ public class UserService implements IUserService {
     @Value("${jwt.secretKey}")
     private String secretKey;
     @Override
-    public User createUser(UserDTO userDTO) throws DataNotFoundException, PermissionDenyException {
+    public User createUser(UserDTO userDTO) throws DataNotFoundException, PermissionDenyException, InvalidAccountException {
         String otp = otpUtil.generateOtp();
         try {
             emailUtil.sendOtpEmail(userDTO.getEmail(), otp);
@@ -59,6 +59,9 @@ public class UserService implements IUserService {
         String phoneNumber = userDTO.getPhoneNumber();
         if(userRepository.existsByPhoneNumber(phoneNumber)){
             throw new DataIntegrityViolationException("Phone number already exist");
+        }
+        if (userRepository.existsByEmail(userDTO.getEmail())){
+            throw new InvalidAccountException("Email already exist");
         }
         Role role = roleRepository.findById(userDTO.getRoleId()).orElseThrow(()->
                  new DataNotFoundException("Cannot found this role"));

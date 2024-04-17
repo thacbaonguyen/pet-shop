@@ -15,7 +15,7 @@ import com.petbackend.thbao.responses.UserLoginResponse;
 import java.text.ParseException;
 
 public interface IUserService {
-    User createUser(UserDTO userDTO) throws DataNotFoundException, PermissionDenyException;
+    User createUser(UserDTO userDTO) throws DataNotFoundException, PermissionDenyException, InvalidAccountException;
 
     UserLoginResponse login(UserLoginDTO userLoginDTO) throws DataNotFoundException, InvalidPasswordException, InvalidAccountException;
     public String forgotPassword(String email) throws DataNotFoundException;

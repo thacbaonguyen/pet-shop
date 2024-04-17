@@ -5,6 +5,7 @@ import com.petbackend.thbao.dtos.TokenDTO;
 import com.petbackend.thbao.dtos.UserDTO;
 import com.petbackend.thbao.dtos.UserLoginDTO;
 import com.petbackend.thbao.exceptions.DataNotFoundException;
+import com.petbackend.thbao.exceptions.InvalidAccountException;
 import com.petbackend.thbao.exceptions.InvalidPasswordException;
 import com.petbackend.thbao.exceptions.PermissionDenyException;
 import com.petbackend.thbao.models.User;
@@ -37,7 +38,12 @@ public class UserController {
         if (!userDTO.getPassword().equals(userDTO.getRetypePassword())){
             return ResponseEntity.badRequest().body("Password does not match");
         }
-        User user = userService.createUser(userDTO);
+        User user = null;
+        try {
+            user = userService.createUser(userDTO);
+        } catch (InvalidAccountException e) {
+            throw new RuntimeException(e);
+        }
         return ResponseEntity.ok(UserResponse.fromUserResponse(user));
     }
     @PutMapping("/verify-account")

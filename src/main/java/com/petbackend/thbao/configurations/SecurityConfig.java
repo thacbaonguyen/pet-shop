@@ -33,8 +33,15 @@ public class SecurityConfig {
         httpSecurity.authorizeHttpRequests(request ->
                     request.requestMatchers(HttpMethod.POST, String.format("%s/users/register", apiPrefix),
                                     String.format("%s/users/login", apiPrefix),
-                                    String.format("%s/users/introspect", apiPrefix))
+                                    String.format("%s/users/introspect", apiPrefix),
+                                    String.format("%s/users/verify-account", apiPrefix),
+                                    String.format("%s/users/regenerate-otp", apiPrefix))
                 .permitAll()
+                            .requestMatchers(HttpMethod.PUT,
+                                String.format("%s/users/verify-account/**", apiPrefix),
+                                String.format("%s/users/regenerate-otp/**", apiPrefix),
+                                    String.format("%s/users/forgot-password/**", apiPrefix))
+                        .permitAll()
                             .requestMatchers(HttpMethod.GET, String.format("%s/users/secured", apiPrefix)).permitAll()
                 .anyRequest().authenticated());
         httpSecurity.oauth2ResourceServer(oAuth2 -> oAuth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder())
