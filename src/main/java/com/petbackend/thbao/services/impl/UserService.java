@@ -8,10 +8,7 @@ import com.nimbusds.jwt.SignedJWT;
 import com.petbackend.thbao.dtos.TokenDTO;
 import com.petbackend.thbao.dtos.UserDTO;
 import com.petbackend.thbao.dtos.UserLoginDTO;
-import com.petbackend.thbao.exceptions.InvalidAccountException;
-import com.petbackend.thbao.exceptions.DataNotFoundException;
-import com.petbackend.thbao.exceptions.InvalidPasswordException;
-import com.petbackend.thbao.exceptions.PermissionDenyException;
+import com.petbackend.thbao.exceptions.*;
 import com.petbackend.thbao.models.Role;
 import com.petbackend.thbao.models.User;
 import com.petbackend.thbao.repositories.RoleRepository;
@@ -49,7 +46,7 @@ public class UserService implements IUserService {
     @Value("${jwt.secretKey}")
     private String secretKey;
     @Override
-    public User createUser(UserDTO userDTO) throws DataNotFoundException, PermissionDenyException, InvalidAccountException {
+    public User createUser(UserDTO userDTO) throws DataNotFoundException, PermissionDenyException {
         String otp = otpUtil.generateOtp();
         try {
             emailUtil.sendOtpEmail(userDTO.getEmail(), otp);
@@ -58,10 +55,10 @@ public class UserService implements IUserService {
         }
         String phoneNumber = userDTO.getPhoneNumber();
         if(userRepository.existsByPhoneNumber(phoneNumber)){
-            throw new DataIntegrityViolationException("Phone number already exist");
+            throw new DataNotFoundException("Phone number already exist");
         }
         if (userRepository.existsByEmail(userDTO.getEmail())){
-            throw new InvalidAccountException("Email already exist");
+            throw new AlreadyExistingException("Email already exist");
         }
         Role role = roleRepository.findById(userDTO.getRoleId()).orElseThrow(()->
                  new DataNotFoundException("Cannot found this role"));

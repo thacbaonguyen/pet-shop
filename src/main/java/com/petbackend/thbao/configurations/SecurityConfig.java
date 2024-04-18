@@ -33,9 +33,7 @@ public class SecurityConfig {
         httpSecurity.authorizeHttpRequests(request ->
                     request.requestMatchers(HttpMethod.POST, String.format("%s/users/register", apiPrefix),
                                     String.format("%s/users/login", apiPrefix),
-                                    String.format("%s/users/introspect", apiPrefix),
-                                    String.format("%s/users/verify-account", apiPrefix),
-                                    String.format("%s/users/regenerate-otp", apiPrefix))
+                                    String.format("%s/users/introspect", apiPrefix))
                 .permitAll()
                             .requestMatchers(HttpMethod.PUT,
                                 String.format("%s/users/verify-account/**", apiPrefix),

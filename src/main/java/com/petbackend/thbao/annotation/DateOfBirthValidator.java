@@ -4,7 +4,6 @@ import com.petbackend.thbao.exceptions.InvalidDateException;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
-import java.lang.reflect.Field;
 import java.time.LocalDate;
 
 public class DateOfBirthValidator implements ConstraintValidator<ValidDateOfBirth, LocalDate> {
