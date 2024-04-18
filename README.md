@@ -32,16 +32,16 @@
 ##### `For any inquiries, please contact me`
 
 <div>
-    <a href="https://www.facebook.com/thbaonguyen.25.11/" style="margin-right: 60px; display: inline-block; text-align: center;">
+    <a href="https://www.facebook.com/thbaonguyen.25.11/" style="margin-right: 60px;">
 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Facebook_Logo_%282019%29.png/768px-Facebook_Logo_%282019%29.png" width="35" height="35">
 
 </a>
-<a href="https://www.linkedin.com/in/thacbaonguyen/" style="margin-right: 60px; display: inline-block; text-align: center;">
+<a href="https://www.linkedin.com/in/thacbaonguyen/" style="margin-right: 60px; ">
 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/81/LinkedIn_icon.svg/2048px-LinkedIn_icon.svg.png" width="35" height="35">
 
 </a>
 
-<a href="ar.thbaonguyen@gmail.com" style="margin-right: 60px; display: inline-block; text-align: center;" >
+<a href="ar.thbaonguyen@gmail.com" style="margin-right: 60px;" >
 <img src="https://cdn4.iconfinder.com/data/icons/social-media-logos-6/512/112-gmail_email_mail-512.png" width="35" height="35">
 </a>
 
