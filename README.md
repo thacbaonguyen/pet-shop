@@ -2,7 +2,7 @@
 
 ---
 
-### `Futures`
+### `Function`
 
 - The website is for pet adoption, reporting lost pets, searching for pets, and selling related products.
 - Use `authentication` and `authorization`, `JSON Web Token`(**_JWT_**).
